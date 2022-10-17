@@ -4,8 +4,11 @@ const _ = require("lodash");
 const resolvers = {
   Query: {
     //USER RESOLVERS
-    users: () => {
-      return userList;
+    users: (parent, args, context) => {
+      console.log(context);
+      if (userList) return { users: userList };
+
+      return { message: "Yo there was an Error!" };
     },
     user: (parent, args) => {
       const id = args.id;
@@ -58,6 +61,18 @@ const resolvers = {
     deleteUser: (parent, args) => {
       const id = args.id;
       _.remove(userList, (user) => user.id === Number(id));
+      return null;
+    },
+  },
+  UsersResult: {
+    __resolveType(obj) {
+      if (obj.users) {
+        return "UsersSuccessfulResult";
+      }
+      if (obj.message) {
+        return "UsersErrorResult";
+      }
+
       return null;
     },
   },
